@@ -50,11 +50,67 @@ for line in cprices:
 
 	# Creating a list for the first ocurrence of each prod_id date order
 	if comp not in comp_prices[prod_id][date]:
-		comp_prices[prod_id][date][comp] = list()
+		comp_prices[prod_id][date][comp] = dict()
+
+	# Creating a list for the first ocurrence of each prod_id date order
+	if pay_type not in comp_prices[prod_id][date][comp]:
+		comp_prices[prod_id][date][comp][pay_type] = dict()
 
 	# Pushing the price monitoring info in the data structure
-	comp_prices[prod_id][date][comp].append([time, price, pay_type])
+	comp_prices[prod_id][date][comp][pay_type][time] = price
 
+
+
+#---- Saving ordered file for vizualization purposes ---------------------------------
+
+f = open(os.path.join("dataset","ordered_comp_prices.csv"), "w")
+
+f.write("prod_id;date;comp;time;price;pay_type\n")
+
+for prod_id in sorted(comp_prices.keys()):
+	for date in sorted(comp_prices[prod_id].keys()):
+		for comp in sorted(comp_prices[prod_id][date].keys()):
+			for pay_type in sorted(comp_prices[prod_id][date][comp].keys()):
+				for time in sorted(comp_prices[prod_id][date][comp][pay_type].keys()):
+					price = comp_prices[prod_id][date][comp][pay_type][time]
+					f.write("P{};{};C{};{};{};PT{}\n".format(prod_id, date,comp, time,
+						price, pay_type))
+
+f.close()
+
+
+
+#---- Computing the mean price of day ------------------------------------------------
+
+for prod_id in comp_prices.keys():
+	for date in comp_prices[prod_id].keys():
+		for comp in comp_prices[prod_id][date].keys():
+			for pay_type in comp_prices[prod_id][date][comp].keys():
+				mean_price = 0.0
+				count_flag = 0
+				for time in comp_prices[prod_id][date][comp][pay_type].keys():
+					price = comp_prices[prod_id][date][comp][pay_type][time]
+					mean_price += price
+					count_flag += 1
+				mean_price = round((mean_price / count_flag), 2)
+				comp_prices[prod_id][date][comp][pay_type] = mean_price
+				
+
+
+
+f = open(os.path.join("dataset","temp.csv"), "w")
+
+f.write("prod_id;comp;date;time;pay_type;price\n")
+
+for prod_id in sorted(comp_prices.keys()):
+	for date in sorted(comp_prices[prod_id].keys()):
+		for comp in sorted(comp_prices[prod_id][date].keys()):
+			for pay_type in sorted(comp_prices[prod_id][date][comp].keys()):
+				price = comp_prices[prod_id][date][comp][pay_type]
+				f.write("{};{};{};{};{};{}\n".format(prod_id, comp, date, time,
+						pay_type, price))
+
+f.close()
 
 
 #---- Saving statistical info on disk ------------------------------------------------
