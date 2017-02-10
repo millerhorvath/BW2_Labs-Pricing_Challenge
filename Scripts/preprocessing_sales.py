@@ -34,7 +34,7 @@ for line in sales:
 	# Separating values in a list
 	s = line.split(',')
 
-	# Organizing sale's information
+	# Organizing sale information
 	prod_id = int(s[0][1])
 	date = s[1]
 	qty = int(float(s[2]))
