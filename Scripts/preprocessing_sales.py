@@ -62,7 +62,7 @@ for line in sales:
 
 f = open(os.path.join("dataset","ordered_sales.csv"), "w")
 
-f.write("prod_id;date;price;cout\n")
+f.write("prod_id;date;price;count\n")
 
 for prod_id in sorted(split_sales.keys()):
 	for date in sorted(split_sales[prod_id].keys()):
